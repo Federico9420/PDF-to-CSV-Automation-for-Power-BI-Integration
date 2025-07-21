@@ -25,6 +25,12 @@ wheels = [
 ]
 
 [[package]]
+name = "extractor"
+version = "0.5"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/33/61/5bc046d77108f553e47621cca423ea81a8c67f9495da1cb16b0d43ac6598/Extractor-0.5.tar.gz", hash = "sha256:6fad02ab31c73828310754a8b08205452cea410da154d8b6b8795a4b1837d1dc", size = 6017 }
+
+[[package]]
 name = "sqlparse"
 version = "0.5.3"
 source = { registry = "https://pypi.org/simple" }
@@ -39,10 +45,14 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "django" },
+    { name = "extractor" },
 ]
 
 [package.metadata]
-requires-dist = [{ name = "django", specifier = ">=5.2.4" }]
+requires-dist = [
+    { name = "django", specifier = ">=5.2.4" },
+    { name = "extractor", specifier = ">=0.5" },
+]
 
 [[package]]
 name = "tzdata"

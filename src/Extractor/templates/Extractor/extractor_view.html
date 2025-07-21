@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Subir PDF</title>
+</head>
+<body>
+    <h1>Subir PDF</h1>
+    <form action="{% url 'Extractor:extractor_view' %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="archivo_pdf" accept="application/pdf" required>
+        <button type="submit">Procesar PDF</button>
+    </form>
+</body>
+</html>
