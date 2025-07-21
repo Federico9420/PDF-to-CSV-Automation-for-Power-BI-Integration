@@ -1,50 +1,95 @@
-from django.shortcuts import render
 import os
 import re
 import pdfplumber
+
+from django.shortcuts import render, redirect
 from django.http import FileResponse, HttpResponseNotAllowed
-
-pdf_path = "Report.pdf"  # Reemplazá con el nombre del archivo que uses
-
-def index (request):
-    return render(request, 'Extractor/index.html')
-
-def login_view(request):
-    return render(request, 'Extractor/login.html')
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 
 RUTA_CSV = r"C:\Users\PC\Desktop\FEDE\PROYECTO PORTFOLIOS\PROYECTO EXTRACTOR\CSVS"
 
+
+def index(request):
+    if request.user.is_authenticated:
+        return redirect('Extractor:extractor_view')
+    return render(request, 'Extractor/index.html')
+
+
+def login_view(request):
+    if request.user.is_authenticated:
+        return redirect('Extractor:extractor_view')
+
+    if request.method == 'POST':
+        form = AuthenticationForm(data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            login(request, user)
+            return redirect('Extractor:extractor_view')
+        else:
+            messages.error(request, 'Usuario o contraseña incorrectos')
+    else:
+        form = AuthenticationForm()
+
+    return render(request, 'Extractor/login.html', {'form': form})
+
+
+def logout_view(request):
+    logout(request)
+    return redirect('Extractor:index')
+
+
 def parse_line(line):
-    pattern = re.match(
-        r"""^(?P<id>\S+)\s+
-            (?P<desc>.+?Talle:\s*\S+)\s+
-            (?P<local>-?\d+)\s+
-            (?:-?\d+\s+){2}
-            (?P<dep1>-?\d+)\s+
-            (?P<dep2>-?\d+)\s+
-            (?:-?\d+\s+){6}
-            (?P<color>\S+)\s+
-            (?P<general>-?\d+)$
-        """,
-        line,
-        re.VERBOSE
-    )
-    if pattern:
+    try:
+        if not re.search(r"Talle:\s*\S+", line):
+            return None
+
+        partes = line.split()
+
+        # ID del producto
+        id_producto = partes[0]
+
+        # Índice del "Talle:"
+        idx_talle = next(i for i, p in enumerate(partes) if "Talle:" in p or p == "Talle:")
+
+        # Descripción completa con talle incluido
+        descripcion = " ".join(partes[1:idx_talle + 2])
+
+        # Color (última palabra alfabética o patrón conocido)
+        color_match = re.findall(r"[A-ZÑÁÉÍÓÚÜ/-]{3,}$", line)
+        color = color_match[0] if color_match else "VARIOS"
+
+        # Todos los números enteros (stock general, depósitos, etc.)
+        numeros = [int(n) for n in re.findall(r"-?\d+", line)]
+
+        if len(numeros) < 4:
+            return None
+
+        stock_local = numeros[1]
+        deposito1 = numeros[4] if len(numeros) > 4 else 0
+        deposito2 = numeros[5] if len(numeros) > 5 else 0
+        stock_general = numeros[-1]
+
         return ",".join([
-            pattern["id"],
-            pattern["desc"],
-            pattern["color"],
-            pattern["local"],
-            pattern["general"],
-            pattern["dep1"],
-            pattern["dep2"]
+            id_producto,
+            descripcion,
+            color,
+            str(stock_local),
+            str(stock_general),
+            str(deposito1),
+            str(deposito2)
         ])
-    return None
+
+    except Exception:
+        return None
 
 
+@login_required(login_url='Extractor:login_view')
 def subir_pdf_view(request):
     if request.method == 'GET':
-        return render(request, 'extractor_view.html')  
+        return render(request, 'Extractor/extractor_view.html')
 
     if request.method == 'POST' and request.FILES.get('archivo_pdf'):
         archivo = request.FILES['archivo_pdf']
@@ -61,7 +106,6 @@ def subir_pdf_view(request):
                         resultados.append(fila)
 
         os.makedirs(RUTA_CSV, exist_ok=True)
-
         nombre_csv = archivo.name.replace(".pdf", ".csv")
         ruta_csv = os.path.join(RUTA_CSV, nombre_csv)
 
@@ -70,9 +114,7 @@ def subir_pdf_view(request):
             for fila in resultados:
                 f.write(fila + "\n")
 
-        return FileResponse(open(ruta_csv, 'rb'), as_attachment=True, filename=nombre_csv)
+        messages.success(request, f'Archivo generado correctamente en: {ruta_csv}')
+        return render(request, 'Extractor/extractor_view.html')
 
-    
     return HttpResponseNotAllowed(['GET', 'POST'])
-
-

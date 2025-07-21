@@ -1,24 +1,12 @@
 {% extends 'Extractor/base.html' %}
 
-{% block content%}
-   <body>
-    <h1>Iniciar Sesión</h1>
+{% block content %}
+<h1>Iniciar Sesión</h1>
 <form method="post">
-  {% csrf_token %}
-  <input type="text" name="username" placeholder="Usuario">
-  <input type="password" name="password" placeholder="Contraseña">
-  <button type="submit">Iniciar sesión</button>
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Entrar</button>
 </form>
-    
-    <form method="post">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Entrar</button>
-    </form>
-    <p>¿No sabés tu cuenta? Comunicate con tu superior directo más cercano para gestionarla.</p>
-    <a href="{% url 'Extractor:index' %}">Volver</a>
-</body>
-
-{% endblock content%}
-
- 
+<p>¿No sabés tu cuenta? Comunicate con tu superior directo más cercano para gestionarla.</p>
+<a href="{% url 'Extractor:index' %}">Volver</a>
+{% endblock content %}

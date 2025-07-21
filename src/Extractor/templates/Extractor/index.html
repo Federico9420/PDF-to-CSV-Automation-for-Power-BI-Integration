@@ -1,6 +1,7 @@
 {% extends 'Extractor/base.html' %}
 {% block content %}
     <h1>Bienvenido a Extractor</h1>
-    <a href="{% url 'Extractor:login_view' %}">Iniciar Sesión</a>
+    {% if not user.is_authenticated %}
+        <a href="{% url 'Extractor:login_view' %}">Iniciar Sesión</a>
+    {% endif %}
 {% endblock content %}
-

@@ -1,12 +1,57 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Extractor.csv</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+        }
+
+        header {
+            background-color: #f5f5f5;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ccc;
+        }
+
+        nav a {
+            margin-left: 10px;
+            text-decoration: none;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .content {
+            padding: 20px;
+        }
+    </style>
 </head>
 <body>
+
+<header>
+    <div>
+        <strong>Extractor.csv</strong>
+    </div>
+    <nav>
+        <a href="{% url 'Extractor:index' %}">Inicio</a>
+        {% if user.is_authenticated %}
+            <span>Hola, {{ user.username }}</span>
+            <a href="{% url 'Extractor:logout_view' %}">Cerrar sesión</a>
+        {% else %}
+            <a href="{% url 'Extractor:login_view' %}">Iniciar sesión</a>
+        {% endif %}
+    </nav>
+</header>
+
+<div class="content">
     {% block content %}
     {% endblock content %}
+</div>
+
 </body>
 </html>

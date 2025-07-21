@@ -6,6 +6,12 @@
 </head>
 <body>
     <h1>Subir PDF</h1>
+
+    {% if user.is_authenticated %}
+        <p>Sesión iniciada como {{ user.username }}</p>
+        <a href="{% url 'Extractor:logout_view' %}">Cerrar sesión</a>
+    {% endif %}
+
     <form action="{% url 'Extractor:extractor_view' %}" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <input type="file" name="archivo_pdf" accept="application/pdf" required>
