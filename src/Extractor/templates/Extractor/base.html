@@ -4,54 +4,85 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Extractor.csv</title>
+
+    <!-- Fuente Petrona Italic Bold -->
+    <link href="https://fonts.googleapis.com/css2?family=Petrona:ital,wght@1,700&display=swap" rel="stylesheet">
+
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
+        :root {
+            --nav-bg: #2C365A;   /* azul enfasis 1 oscuro %25 */
+            --text-color: #EEE8DF; /* gris claro fondo 2 */
+            --hover-color: #bdc3c7; /* gris hover */
+            --body-bg: #EEE8DF;
+            --text-main: #333;
         }
 
-        header {
-            background-color: #f5f5f5;
-            padding: 10px 20px;
+        body {
+            margin: 0;
+            font-family: 'Petrona', serif;
+            font-weight: 700;
+            font-style: italic;
+            background-color: var(--body-bg);
+            color: var(--text-main);
+        }
+
+        /* NAVBAR */
+        .navbar {
+            background-color: var(--nav-bg);
+            padding: 1rem 2rem;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #ccc;
         }
 
-        nav a {
-            margin-left: 10px;
+        .navbar-brand {
+            font-size: 1.5rem;
+            color: var(--text-color);
             text-decoration: none;
-            color: #333;
-            font-weight: bold;
         }
 
+        .navbar-nav {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .navbar-nav a,
+        .navbar-nav span {
+            color: var(--text-color);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .navbar-nav a:hover {
+            color: var(--hover-color);
+        }
+
+        /* CONTENIDO */
         .content {
-            padding: 20px;
+            padding: 40px 30px;
         }
     </style>
 </head>
 <body>
 
-<header>
-    <div>
-        <strong>Extractor.csv</strong>
-    </div>
-    <nav>
-        <a href="{% url 'Extractor:index' %}">Inicio</a>
-        {% if user.is_authenticated %}
-            <span>Hola, {{ user.username }}</span>
-            <a href="{% url 'Extractor:logout_view' %}">Cerrar sesión</a>
-        {% else %}
-            <a href="{% url 'Extractor:login_view' %}">Iniciar sesión</a>
-        {% endif %}
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <a class="navbar-brand" href="{% url 'Extractor:index' %}">Bienvenido a Extractor App</a>
+        <div class="navbar-nav">
+            {% if user.is_authenticated %}
+                <span>Hola, {{ user.username }}</span>
+                <a href="{% url 'Extractor:logout_view' %}">Cerrar sesión</a>
+            {% else %}
+                <a href="{% url 'Extractor:login_view' %}">Iniciar sesión</a>
+            {% endif %}
+        </div>
     </nav>
-</header>
 
-<div class="content">
-    {% block content %}
-    {% endblock content %}
-</div>
+    <!-- CONTENIDO -->
+    <div class="content">
+        {% block content %}
+        {% endblock content %}
+    </div>
 
 </body>
 </html>

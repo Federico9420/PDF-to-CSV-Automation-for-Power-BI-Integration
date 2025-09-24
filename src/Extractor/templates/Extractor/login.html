@@ -1,12 +1,149 @@
 {% extends 'Extractor/base.html' %}
 
 {% block content %}
-<h1>Iniciar Sesión</h1>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Entrar</button>
-</form>
-<p>¿No sabés tu cuenta? Comunicate con tu superior directo más cercano para gestionarla.</p>
-<a href="{% url 'Extractor:index' %}">Volver</a>
+<style>
+    body {
+        background-color: #EEE8DF;
+        font-family: 'Petrona', serif;
+        font-weight: 700;
+        font-style: italic;
+        margin: 0;
+        color: #2c365A;
+    }
+
+    /* contenedor que centra el formulario */
+    .login-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: calc(100vh - 80px); /* resta el alto aprox del navbar */
+    }
+
+    .login-container {
+        background-color: #2c365a;
+        padding: 40px 50px;
+        border-radius: 16px;
+        box-shadow: 4px 4px 12px rgba(0,0,0,0.25);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 360px;
+    }
+
+    .login-container h1 {
+        color: #EEE8DF;
+        font-size: 2.2rem;
+        margin-bottom: 30px;
+        text-align: center;
+    }
+
+    form {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    input[type="text"], input[type="password"] {
+        padding: 12px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        font-family: 'Petrona', serif;
+        font-style: italic;
+        border: 2px solid #EEE8DF;
+        border-radius: 8px;
+        background-color: #2c365A;
+        color: #EEE8DF;
+        outline: none;
+        transition: all 0.2s ease;
+    }
+
+    input::placeholder {
+        color: #EEE8DF;
+        transition: color 0.2s ease;
+    }
+
+    input:hover {
+        background-color: #EEE8DF;
+        color: #2c365A;
+        border: 2px solid #2c365A;
+    }
+
+    input:hover::placeholder {
+        color: #2c365A;
+    }
+
+    button {
+        padding: 12px;
+        font-size: 1.1rem;
+        font-weight: bold;
+        font-family: 'Petrona', serif;
+        font-style: italic;
+        color: #EEE8DF;
+        background-color: #2c365A;
+        border: 2px solid #EEE8DF;
+        border-radius: 8px;
+        cursor: pointer;
+        box-shadow: 2px 2px 6px rgba(0,0,0,0.2);
+        transition: all 0.2s ease;
+    }
+
+    button:hover {
+        background-color: #EEE8DF;
+        color: #2c365A;
+        border: 2px solid #2c365A;
+        box-shadow: 4px 4px 10px rgba(0,0,0,0.3);
+    }
+
+    .volver-btn {
+        display: inline-block;
+        margin-top: 15px;
+        padding: 10px;
+        font-size: 1rem;
+        font-weight: bold;
+        font-family: 'Petrona', serif;
+        font-style: italic;
+        text-align: center;
+        color: #EEE8DF;
+        background-color: #2c365A;
+        border: 1.5px solid #EEE8DF;
+        border-radius: 8px;
+        cursor: pointer;
+        text-decoration: none;
+        width: 100%;
+        box-shadow: 2px 2px 6px rgba(0,0,0,0.2);
+        transition: all 0.2s ease;
+    }
+
+    .volver-btn:hover {
+        background-color: #EEE8DF;
+        color: #2c365A;
+        border: 1.5px solid #2c365A;
+        box-shadow: 4px 4px 10px rgba(0,0,0,0.3);
+    }
+
+    p {
+        text-align: center;
+        margin: 6px 0;
+        font-size: 0.95rem;
+        color: #EEE8DF;
+    }
+</style>
+
+<div class="login-wrapper">
+    <div class="login-container">
+        <h1>Iniciar Sesión</h1>
+
+        <form method="post">
+            {% csrf_token %}
+            {{ form.username }}
+            {{ form.password }}
+            <button type="submit">Entrar</button>
+        </form>
+
+        <p>¿No sabés tu cuenta?</p>
+        <p>Comunicate con tu superior directo más cercano para gestionarla.</p>
+        <a class="volver-btn" href="{% url 'Extractor:index' %}">Volver</a>
+    </div>
+</div>
 {% endblock content %}

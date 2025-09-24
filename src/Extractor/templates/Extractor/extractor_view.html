@@ -1,21 +1,113 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Subir PDF</title>
-</head>
-<body>
-    <h1>Subir PDF</h1>
+{% extends 'Extractor/base.html' %}
+
+{% block content %}
+<style>
+    body {
+        margin: 0;
+        font-family: 'Petrona', serif;
+        font-weight: 700;
+        font-style: italic;
+        background-color: #EEE8DF; /* fondo sólido */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        color: #2C365A;
+    }
+
+    .hero {
+        text-align: center;
+    }
+
+    .hero h1 {
+        font-size: 2.5rem; /* mismo tamaño del ejemplo */
+        color: #2C365A;
+        margin-bottom: 25px;
+    }
+
+    .upload-form {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .file-input {
+        padding: 12px 20px;
+        font-size: 1.1rem;
+        font-family: 'Petrona', serif;
+        font-style: italic;
+        font-weight: bold;
+        color: #2C365A;
+        background-color: #EEE8DF;
+        border: 2px solid #2C365A;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+
+    .file-input:hover {
+        background-color: #2C365A;
+        color: #EEE8DF;
+    }
+
+    .submit-btn {
+        padding: 12px 20px;
+        font-size: 1.1rem;
+        font-family: 'Petrona', serif;
+        font-style: italic;
+        font-weight: bold;
+        color: #2C365A;
+        background-color: #EEE8DF;
+        border: 2px solid #2C365A;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .submit-btn:hover {
+        background-color: #2C365A;
+        color: #EEE8DF;
+    }
+
+    .auth-info {
+        margin-bottom: 15px;
+        font-size: 1rem;
+        color: #2C365A;
+    }
+
+    .logout-link {
+        display: inline-block;
+        margin-top: 5px;
+        font-size: 0.95rem;
+        color: #2C365A;
+        text-decoration: none;
+        border: 1px solid #2C365A;
+        padding: 6px 12px;
+        border-radius: 6px;
+        transition: all 0.2s ease;
+    }
+
+    .logout-link:hover {
+        background-color: #2C365A;
+        color: #EEE8DF;
+    }
+</style>
+
+<div class="hero">
+    <h1>Comencemos:</h1>
 
     {% if user.is_authenticated %}
-        <p>Sesión iniciada como {{ user.username }}</p>
-        <a href="{% url 'Extractor:logout_view' %}">Cerrar sesión</a>
+        <div class="auth-info">
+            <p>Sesión iniciada como <strong>{{ user.username }}</strong></p>
+            <a href="{% url 'Extractor:logout_view' %}" class="logout-link">Cerrar sesión</a>
+        </div>
     {% endif %}
 
-    <form action="{% url 'Extractor:extractor_view' %}" method="POST" enctype="multipart/form-data">
+    <form class="upload-form" action="{% url 'Extractor:extractor_view' %}" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
-        <input type="file" name="archivo_pdf" accept="application/pdf" required>
-        <button type="submit">Procesar PDF</button>
+        <input class="file-input" type="file" name="pdf_file" accept="application/pdf" required>
+        <button class="submit-btn" type="submit">Analizar</button>
     </form>
-</body>
-</html>
+</div>
+{% endblock content %}
