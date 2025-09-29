@@ -53,10 +53,10 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'extractor_db',
-        'USER': 'FedericoJAlmonacid',
-        'PASSWORD': 'F6e2d8e6!',
-        'HOST': 'localhost',
+        'NAME': 'Fede9420$default',
+        'USER': 'Fede9420',
+        'PASSWORD': 'F6e2d8e6!',  
+        'HOST': 'Fede9420.mysql.pythonanywhere-services.com',
         'PORT': '3306',
     }
 }
