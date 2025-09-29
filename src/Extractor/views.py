@@ -1,5 +1,6 @@
 import os
 import requests
+from requests.auth import HTTPBasicAuth  
 from django.shortcuts import redirect, render
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -65,24 +66,25 @@ def extractor_view(request):
 
         # Hacer el POST al webhook de n8n con todas las imágenes
         webhook_url = "https://javi9420.app.n8n.cloud/webhook-test/a36ce4cf-c90e-477a-942a-b34615f97965"
+        WEBHOOK_USER = "Fede9420"           # 👈 lo que configuraste en el nodo Webhook
+        WEBHOOK_PASS = "Javier123"    # 👈 idem
+        
         try:
             response = requests.post(
                 webhook_url,
+                auth=HTTPBasicAuth(WEBHOOK_USER, WEBHOOK_PASS),  # 👈 Basic Auth
                 files=file_payload,
                 data={
                     "pdf_name": pdf_file.name,
                     "total_pages": len(images),
                     "user": request.user.username,
-                    "token": settings.N8N_TOKEN,
                 },
                 timeout=30,
             )
-            # Podés chequear status, loguear fallas, etc.
             print("Webhook response:", response.status_code, response.text)
         except Exception as e:
             print("Error al enviar webhook a n8n:", e)
         finally:
-            # Cerrá los archivos abiertos
             for f in file_payload.values():
                 f.close()
 
