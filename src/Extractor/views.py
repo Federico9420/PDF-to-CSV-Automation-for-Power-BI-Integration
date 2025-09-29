@@ -65,7 +65,7 @@ def extractor_view(request):
             file_payload[f"file_{i+1}"] = open(image_path, "rb")
 
         # Hacer el POST al webhook de n8n con todas las imágenes
-        webhook_url = "https://javi9420.app.n8n.cloud/webhook-test/a36ce4cf-c90e-477a-942a-b34615f97965"
+        webhook_url = 'https://javi9420.app.n8n.cloud/webhook-test/a36ce4cf-c90e-477a-942a-b34615f97965'
         WEBHOOK_USER = "Fede9420"           # 👈 lo que configuraste en el nodo Webhook
         WEBHOOK_PASS = "Javier123"    # 👈 idem
         
