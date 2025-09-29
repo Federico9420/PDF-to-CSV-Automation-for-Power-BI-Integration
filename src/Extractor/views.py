@@ -53,40 +53,38 @@ def extractor_view(request):
         # Convertir PDF a imágenes
         images = convert_from_path(uploaded_pdf_path)
         image_urls = []
-        file_payload = {}
 
         for i, img in enumerate(images):
             image_filename = f"page_{i+1}.png"
             image_path = os.path.join(output_dir, image_filename)
             img.save(image_path, "PNG")
-            image_urls.append(settings.MEDIA_URL + "temp_images/" + image_filename)
 
-            # Agregá el archivo para enviar a n8n
-            file_payload[f"file_{i+1}"] = open(image_path, "rb")
+            # URL absoluta accesible desde n8n
+            image_url = request.build_absolute_uri(
+                settings.MEDIA_URL + "temp_images/" + image_filename
+            )
+            image_urls.append(image_url)
 
-        # Hacer el POST al webhook de n8n con todas las imágenes
+        # Hacer el POST al webhook de n8n con metadata y URLs (no archivos)
         webhook_url = 'https://javi9420.app.n8n.cloud/webhook-test/a36ce4cf-c90e-477a-942a-b34615f97965'
-        WEBHOOK_USER = "Fede9420"           # 👈 lo que configuraste en el nodo Webhook
-        WEBHOOK_PASS = "Javier123"    # 👈 idem
+        WEBHOOK_USER = "Fede9420"
+        WEBHOOK_PASS = "Javier123"
         
         try:
             response = requests.post(
                 webhook_url,
-                auth=HTTPBasicAuth(WEBHOOK_USER, WEBHOOK_PASS),  # 👈 Basic Auth
-                files=file_payload,
-                data={
+                auth=HTTPBasicAuth(WEBHOOK_USER, WEBHOOK_PASS),
+                json={
                     "pdf_name": pdf_file.name,
                     "total_pages": len(images),
                     "user": request.user.username,
+                    "image_urls": image_urls,
                 },
-                timeout=30,
+                timeout=45,
             )
             print("Webhook response:", response.status_code, response.text)
         except Exception as e:
             print("Error al enviar webhook a n8n:", e)
-        finally:
-            for f in file_payload.values():
-                f.close()
 
         # Renderizar galería para el usuario (UI)
         return render(request, "Extractor/galeria.html", {"images": image_urls})
