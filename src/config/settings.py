@@ -1,16 +1,18 @@
 import os
 from pathlib import Path
 from dotenv import load_dotenv  
+
+# Cargar variables de entorno
 load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'DEV-ONLY-CHANGE-ME')
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False  
-ALLOWED_HOSTS = ['Fede9420.pythonanywhere.com']
-#ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
+# 🔑 Seguridad
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'DEV-ONLY-CHANGE-ME')
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+
+# 📦 Apps
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -50,61 +52,56 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
+# 🗄️ Base de datos (desde .env)
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'Fede9420$default',
-        'USER': 'Fede9420',
-        'PASSWORD': 'F6e2d8e6!',  
-        'HOST': 'Fede9420.mysql.pythonanywhere-services.com',
-        'PORT': '3306',
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT'),
     }
 }
 
-
+# 🔐 Validadores
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
+# 🌍 Internacionalización
 LANGUAGE_CODE = 'es'
-
 TIME_ZONE = 'America/Argentina/Ushuaia'
-
 USE_I18N = True
-
 USE_TZ = True
 
+# 📂 Archivos estáticos
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_DIRS = [
-    BASE_DIR / 'Extractor' / 'static',
-]
+STATICFILES_DIRS = [BASE_DIR / 'Extractor' / 'static']
 
+# 📂 Archivos multimedia
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
 
+# 🔑 Login
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
 LOGIN_URL = 'Extractor:login_view'
 LOGIN_REDIRECT_URL = 'Extractor:extractor_view'
 LOGOUT_REDIRECT_URL = 'Extractor:index'
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-MEDIA_URL = '/media/'
+# 🔌 N8N (BasicAuth)
+N8N_USER = os.getenv("N8N_USER", "")
+N8N_PASSWORD = os.getenv("N8N_PASSWORD", "")
+N8N_URL = os.getenv("N8N_URL", "")
 
-N8N_TOKEN = os.getenv("N8N_TOKEN", "")         
-POPPLER_PATH = os.getenv("POPPLER_PATH", "")
+N8N_PULL_API_KEY = "Facejavier15455695"
 
+# 👀 Config local (no obligatorio)
 try:
     from .settings_dev import *
 except ModuleNotFoundError:
-    pass    
+    pass
