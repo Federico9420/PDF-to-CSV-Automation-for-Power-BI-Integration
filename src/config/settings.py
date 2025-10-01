@@ -2,16 +2,15 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv  
 
-# Cargar variables de entorno
-load_dotenv()
+dotenv_path = os.path.join(BASE_DIR, '.env')
+load_dotenv(dotenv_path)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # 🔑 Seguridad
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'DEV-ONLY-CHANGE-ME')
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
-ALLOWED_HOSTS = ['fede9420.pythonanywhere.com']
-
+ALLOWED_HOSTS = ['fede9420.pythonanywhere.com', 'www.fede9420.pythonanywhere.com']
 # 📦 Apps
 INSTALLED_APPS = [
     'django.contrib.admin',
