@@ -8,7 +8,7 @@ load_dotenv(dotenv_path)
 
 # 🔑 Seguridad
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'DEV-ONLY-CHANGE-ME')
-DEBUG = os.getenv('DEBUG', 'False') == 'True'
+DEBUG = 'False'
 ALLOWED_HOSTS = ['fede9420.pythonanywhere.com', 'www.fede9420.pythonanywhere.com']
 
 # 📦 Apps
