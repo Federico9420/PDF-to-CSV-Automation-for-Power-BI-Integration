@@ -2,15 +2,15 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv  
 
+BASE_DIR = Path(__file__).resolve().parent.parent
 dotenv_path = os.path.join(BASE_DIR, '.env')
 load_dotenv(dotenv_path)
-
-BASE_DIR = Path(__file__).resolve().parent.parent
 
 # 🔑 Seguridad
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'DEV-ONLY-CHANGE-ME')
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 ALLOWED_HOSTS = ['fede9420.pythonanywhere.com', 'www.fede9420.pythonanywhere.com']
+
 # 📦 Apps
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -96,8 +96,7 @@ LOGOUT_REDIRECT_URL = 'Extractor:index'
 N8N_USER = os.getenv("N8N_USER", "")
 N8N_PASSWORD = os.getenv("N8N_PASSWORD", "")
 N8N_URL = os.getenv("N8N_URL", "")
-
-N8N_PULL_API_KEY = "Facejavier15455695"
+N8N_PULL_API_KEY = os.getenv("N8N_PULL_API_KEY", "")
 
 # 👀 Config local (no obligatorio)
 try:
