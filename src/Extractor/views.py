@@ -1,6 +1,7 @@
 import os
 import json
 import uuid
+import io
 from django.shortcuts import redirect, render
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -11,11 +12,14 @@ from django.core.files.storage import FileSystemStorage
 from django.http import JsonResponse, HttpResponseForbidden
 from django.utils import timezone
 from pdf2image import convert_from_path
+from PIL import Image
+
 
 def index(request):
     if request.user.is_authenticated:
         return redirect('Extractor:extractor_view')
     return render(request, 'Extractor/index.html')
+
 
 def login_view(request):
     if request.user.is_authenticated:
@@ -33,6 +37,7 @@ def login_view(request):
 
     return render(request, 'Extractor/login.html', {'form': form})
 
+
 def logout_view(request):
     logout(request)
     return redirect('Extractor:index')
@@ -41,7 +46,7 @@ def logout_view(request):
 @login_required(login_url='Extractor:login_view')
 def extractor_view(request):
     """
-    View que procesa el PDF, guarda las imágenes en MEDIA_ROOT/temp_images
+    View que procesa el PDF, guarda las imágenes optimizadas en MEDIA_ROOT/temp_images
     y registra (append) un objeto JSON en temp_images/processed_items.json
     con metadata e image_urls. NO intenta enviar nada por HTTP a n8n.
     """
@@ -57,14 +62,30 @@ def extractor_view(request):
         output_dir = os.path.join(settings.MEDIA_ROOT, "temp_images")
         os.makedirs(output_dir, exist_ok=True)
 
-        # Convertir PDF a imágenes
-        images = convert_from_path(uploaded_pdf_path)
+        # 🔧 Convertir PDF a imágenes con menos DPI (menos carga visual)
+        images = convert_from_path(uploaded_pdf_path, dpi=120)  # antes era 200
+
         image_urls = []
 
-        for i, img in enumerate(images):
-            image_filename = f"page_{i+1}.png"
+        for i, img in enumerate(images, start=1):
+            # 🔧 Redimensionar imagen manteniendo proporción
+            max_width = 1024
+            if img.width > max_width:
+                ratio = max_width / img.width
+                new_height = int(img.height * ratio)
+                img = img.resize((max_width, new_height), Image.LANCZOS)
+
+            # 🔧 Comprimir y optimizar imagen
+            buffer = io.BytesIO()
+            img.save(buffer, format="PNG", optimize=True, quality=85)
+            buffer.seek(0)
+
+            image_filename = f"page_{i}.png"
             image_path = os.path.join(output_dir, image_filename)
-            img.save(image_path, "PNG")
+
+            # Guardar imagen final
+            with open(image_path, "wb") as f:
+                f.write(buffer.getbuffer())
 
             # URL absoluta (ej: https://tu-dominio/media/temp_images/page_1.png)
             image_url = request.build_absolute_uri(
@@ -93,7 +114,6 @@ def extractor_view(request):
         except Exception:
             items = []
 
-        # Insertar primero (último procesado al principio)
         items.insert(0, metadata_item)
         with open(processed_file, "w", encoding="utf-8") as f:
             json.dump(items, f, ensure_ascii=False, indent=2)
@@ -126,7 +146,6 @@ def processed_list(request):
     except Exception:
         items = []
 
-    # Permitir limitar resultados (opcional)
     limit = request.GET.get("limit")
     if limit:
         try:
@@ -136,6 +155,7 @@ def processed_list(request):
             pass
 
     return JsonResponse({"items": items})
+
 
 @login_required(login_url='Extractor:login_view')
 def galeria_view(request):
